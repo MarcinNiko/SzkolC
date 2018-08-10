@@ -326,13 +326,27 @@ private:
 					cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
 					cin >> picked_action;
                     action = (enabled_actions)picked_action;
-					while (picked_action < 1 || picked_action > 3)
-					{
-						cout << "Invalid number pressed." << endl;
-						cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
-						cin >> picked_action;
-                        action = (enabled_actions)picked_action;
-					}
+                    if (players[4].money == 0 && picked_action == 3)
+                    {
+                        while (picked_action < 1 || picked_action > 2)
+					    {
+                            cout << "You have no money to make a BET/CALL"<<endl;
+						    cout << "Invalid number pressed." << endl;
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
+						    cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+					    }
+                    }
+                    else 
+                    {
+                        while (picked_action < 1 || picked_action > 3)
+					    {
+						    cout << "Invalid number pressed." << endl;
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
+						    cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+					    }
+                    }
 				}
 
 				cout << endl;
@@ -347,7 +361,7 @@ private:
 					cout << "\t+ " << players[4].name << " checks.\n";
 					continue;
 				}
-				else
+				else 
 				{
 					if (betOn)
 					{
@@ -358,7 +372,11 @@ private:
 					}
 					else
 					{
-						cout << "How much do you want to bet: ";
+                        //if(players[4].money == 0)
+                        //{
+                        //     cout << "You have no money to bet!" << endl;
+                        //    }
+                        cout << "How much do you want to bet: ";
 						cin >> bet;
 						while (bet > players[4].money || bet < 1)
 						{
