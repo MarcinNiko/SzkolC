@@ -140,6 +140,7 @@ public:
 	bool playing;
 	int round;
 	int goodToGo;
+    bool IfAllIn = false;
 };
 
 class PokerGame
@@ -365,20 +366,44 @@ private:
 				{
 					if (betOn)
 					{
-						pot += betOn;
-						players[player_index].money -= betOn;
-						players[player_index].goodToGo = 1;
-						cout << "\t+ " << players[player_index].name << " bets " << betOn << "$\n";
+                        if (betOn > players[player_index].money)
+                        {
+                            cout << "\t\tYou don't have that amount of money!"<<endl;
+                            cout << "\t\tDo You want to go ALL IN!?" << endl;
+                            cout << "\t\tYour action: (1) Flow (2) ALL IN"<<endl;
+                            cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+                            if (action == FLOP)
+				            {
+					            players[player_index].round = 0;
+					            cout << "\t- " << players[player_index].name << " flops...\n";
+				            }
+                            else
+                            {
+                                pot += players[player_index].money;
+                                players[player_index].money = 0;
+                                players[player_index].goodToGo = 1;
+                                players[player_index].round = 0;
+                                players[player_index].IfAllIn = true;
+
+                                
+                                cout << "\t+ " << players[player_index].name << " GOES ALL IN! " << "$\n";
+                            }//nowa zmienna w players "IfAllIn    dodac przy wygranej zeby sprawdzac tych co dali all in"
+                        }
+                        else
+                        {
+						    pot += betOn;
+						    players[player_index].money -= betOn;
+						    players[player_index].goodToGo = 1;
+						    cout << "\t+ " << players[player_index].name << " bets " << betOn << "$\n";
+                        }
 					}
 					else
 					{
-                        //if(players[4].money == 0)
-                        //{
-                        //     cout << "You have no money to bet!" << endl;
-                        //    }
                         cout << "How much do you want to bet: ";
 						cin >> bet;
-						while (bet > players[player_index].money || bet < 1)
+						
+                        while (bet > players[player_index].money || bet < 1)
 						{
 							cout << "Invalid number to bet." << endl;
 							cout << "How much do you want to bet: ";
@@ -417,6 +442,7 @@ private:
 				}
 				else if (action == CHECK && betOn == 0)
 				{
+                
 					cout << "\t+ " << players[k % players_count].name << " checks." << endl;
 					continue;
 				}
@@ -424,10 +450,32 @@ private:
 				{
 					if (betOn)
 					{
-						pot += betOn;
-						players[k % players_count].money -= betOn;
-						cout << "\t++ " << players[k % players_count].name << " calls!" << endl;
-						players[k % players_count].goodToGo = 1;
+                        if (betOn > players[k % players_count].money)
+                        {
+                            action = (enabled_actions)((rand() % 2) + 1);
+                            if (action == FLOP)
+				            {
+					            players[k % players_count].round = 0;
+					            cout << "\t- " << players[k % players_count].name << " flops...\n";
+				            }
+                            else
+                            {
+                                pot += players[k % players_count].money;
+                                players[k % players_count].money = 0;
+                                players[k % players_count].goodToGo = 1;
+                                players[k % players_count].round = 0;
+                                players[k % players_count].IfAllIn = true;
+
+                                cout << "\t+ " << players[k % players_count].name << " GOES ALL IN! " << "$\n";
+                            }//nowa zmienna w players "IfAllIn    dodac przy wygranej zeby sprawdzac tych co dali all in"
+                        }
+                        else
+                        {
+						    pot += betOn;
+						    players[k % players_count].money -= betOn;
+						    players[k % players_count].goodToGo = 1;
+						    cout << "\t+ " << players[k % players_count].name << " bets " << betOn << "$\n";
+                        }
 					}
 					else
 					{
@@ -756,9 +804,21 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
+                std::cout<<"806"<<std::endl;
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
+            for(int l = 0; l < players_count; l++)
+            {
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                {
+                    std::cout<<"902"<<std::endl;
+                std::cout << "\t" << players[l].name << std::endl;
+                printWinningHand(l);
+                players[l].IfAllIn = false;
+                
+                }
+            }
                 players[winner].money += pot;
 				i++;
 				continue;
@@ -772,9 +832,21 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
+                std::cout<<"823"<<std::endl;
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
+            for(int l = 0; l < players_count; l++)
+            {
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                {
+                    std::cout<<"902"<<std::endl;
+                std::cout << "\t" << players[l].name << std::endl;
+                printWinningHand(l);
+                players[l].IfAllIn = false;
+                
+                }
+            }
                 players[winner].money += pot;
 				i++;
 				continue;
@@ -788,9 +860,19 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
+                std::cout<<"840"<<std::endl;
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
+                for(int l = 0; l < players_count; l++)
+                {
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                {
+                std::cout << "\t" << players[l].name << std::endl;
+                printWinningHand(l);
+                players[l].IfAllIn = false;
+                }
+            }
                 players[winner].money += pot;
 				i++;
 				continue;
@@ -809,7 +891,7 @@ private:
 			maxPoints = 0;
 			for (int q = 0; q < players_count; q++)
 			{
-				if (players[q].round)
+				if (players[q].round || players[q].IfAllIn == true)
 				{
 					if (handPoints[q] > maxPoints)
 					{
@@ -847,10 +929,12 @@ private:
 
             for(int l = 0; l < players_count; l++)
             {
-                if (players[l].round == true && l != roundWinner) 
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
                 {
+                    std::cout<<"902"<<std::endl;
                 std::cout << "\t" << players[l].name << std::endl;
                 printWinningHand(l);
+                players[l].IfAllIn = false;
                 
                 }
             }
