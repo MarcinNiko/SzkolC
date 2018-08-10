@@ -690,7 +690,7 @@ private:
 
 		qsort(winningHand, 5, sizeof(Card), compareCards);
 
-		cout << "   The winning hand:" << endl;
+		//cout << "   The winning hand:" << endl;
 		cout << "   ___   ___   ___   ___   ___" << endl;
 		cout << "  | " << ranks[winningHand[0].rank] << " | | " << ranks[winningHand[1].rank] << " | | " << ranks[winningHand[2].rank] << " | | " << ranks[winningHand[3].rank] << " | | " << ranks[winningHand[4].rank] << " |" << endl;
 		cout << "  | " << suits[winningHand[0].suit] << " | | " << suits[winningHand[1].suit] << " | | " << suits[winningHand[2].suit] << " | | " << suits[winningHand[3].suit] << " | | " << suits[winningHand[4].suit] << " |" << endl;
@@ -834,9 +834,24 @@ private:
 				std::cout << "STRAIGHT FLUSH";
 			std::cout << "\n\n";
 
+            std::cout << "\tThe winning hand:"<<std::endl;
 			printWinningHand(roundWinner);
+            
+            std::cout << std::endl << "Hands of ramaining players:" << std::endl;
 
+            for(int l = 0; l < players_count; l++)
+            {
+                if (players[l].round == true && l != roundWinner) 
+                {
+                std::cout << "\t" << players[l].name << std::endl;
+                printWinningHand(l);
+                
+                }
+            }
+            std::cout << "POT: "<< pot << std::endl;
+            std::cout << "Winner money: "<< players[roundWinner].money << std::endl;
 			players[roundWinner].money += pot;
+            std::cout << "Winner money + pot: " << players[roundWinner].money << std::endl;
 
 			i++;
 		}
