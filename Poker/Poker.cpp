@@ -758,6 +758,8 @@ private:
 			{
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
+                printWinningHand(winner);
+                players[winner].money += pot;
 				i++;
 				continue;
 			}
@@ -772,6 +774,8 @@ private:
 			{
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
+                printWinningHand(winner);
+                players[winner].money += pot;
 				i++;
 				continue;
 			}
@@ -786,6 +790,8 @@ private:
 			{
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
+                printWinningHand(winner);
+                players[winner].money += pot;
 				i++;
 				continue;
 			}
@@ -848,10 +854,10 @@ private:
                 
                 }
             }
-            std::cout << "POT: "<< pot << std::endl;
-            std::cout << "Winner money: "<< players[roundWinner].money << std::endl;
+            //std::cout << "POT: "<< pot << std::endl;
+            //std::cout << "Winner money: "<< players[roundWinner].money << std::endl;
 			players[roundWinner].money += pot;
-            std::cout << "Winner money + pot: " << players[roundWinner].money << std::endl;
+            //std::cout << "Winner money + pot: " << players[roundWinner].money << std::endl;
 
 			i++;
 		}
