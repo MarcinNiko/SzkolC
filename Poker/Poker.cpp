@@ -407,7 +407,7 @@ private:
 						{
 							cout << "Invalid number to bet." << endl;
 							cout << "How much do you want to bet: ";
-							cin >> bet;
+							cin >> bet;						
 							cout << endl << endl;
 						}
 						pot += bet;
@@ -479,7 +479,9 @@ private:
 					}
 					else
 					{
+						
 						bet = (rand() % (players[k % players_count].money / 3) + 10);
+						while(bet > players[k % players_count].money) {bet = (rand() % (players[k % players_count].money / 3) + 10);}
 						pot += bet;
 						players[k % players_count].money -= bet;
 						cout << '\a';
@@ -516,6 +518,30 @@ private:
 							cout << "\t- " << players[player_index].name << " flops...\n";
 							players[player_index].round = 0;
 						}
+						else if (betOn > players[player_index].money)
+                        {
+                            cout << "\t\tYou don't have that amount of money!"<<endl;
+                            cout << "\t\tDo You want to go ALL IN!?" << endl;
+                            cout << "\t\tYour action: (1) Flow (2) ALL IN"<<endl;
+                            cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+                            if (action == FLOP)
+				            {
+					            players[player_index].round = 0;
+					            cout << "\t- " << players[player_index].name << " flops...\n";
+				            }
+                            else
+                            {
+                                pot += players[player_index].money;
+                                players[player_index].money = 0;
+                                players[player_index].goodToGo = 1;
+                                players[player_index].round = 0;
+                                players[player_index].IfAllIn = true;
+
+                                
+                                cout << "\t+ " << players[player_index].name << " GOES ALL IN! " << "$\n";
+                            }
+                        }
 						else
 						{
 							pot += betOn;
@@ -539,10 +565,32 @@ private:
 					}
 					else
 					{
+					    if (betOn > players[k % players_count].money)
+                        {
+                            action = (enabled_actions)((rand() % 2) + 1);
+                            if (action == FLOP)
+				            {
+					            players[k % players_count].round = 0;
+					            cout << "\t- " << players[k % players_count].name << " flops...\n";
+				            }
+                            else
+                            {
+                                pot += players[k % players_count].money;
+                                players[k % players_count].money = 0;
+                                players[k % players_count].goodToGo = 1;
+                                players[k % players_count].round = 0;
+                                players[k % players_count].IfAllIn = true;
+
+                                cout << "\t+ " << players[k % players_count].name << " GOES ALL IN! " << "$\n";
+                            }
+                        }
+						else
+						{
 						pot += betOn;
 						players[k % players_count].money -= betOn;
 						cout << "\t++ " << players[k % players_count].name << " calls!" << endl;
 						players[k % players_count].goodToGo = 1;
+						}
 					}
 				}
 			}
@@ -747,6 +795,47 @@ private:
 		_sleep(3);
 	}
 
+	void FindWinner()
+	{
+					/* find and declare round winner */
+			maxPoints = 0;
+			for (int q = 0; q < players_count; q++)
+			{
+				if (players[q].round || players[q].IfAllIn == true)
+				{
+					if (handPoints[q] > maxPoints)
+					{
+						maxPoints = handPoints[q];
+						roundWinner = q;
+					}
+				}
+			}
+			std::cout << std::endl;
+			std::cout << players[roundWinner].name << " wins $" << pot << " with ";
+			if (maxPoints < 30)
+				std::cout << "HIGH CARD";
+			else if (maxPoints < 50)
+				std::cout << "SINGLE PAIR";
+			else if (maxPoints < 70)
+				std::cout << "TWO PAIRS";
+			else if (maxPoints < 90)
+				std::cout << "THREE OF A KIND";
+			else if (maxPoints < 110)
+				std::cout << "STRAIGHT";
+			else if (maxPoints < 130)
+				std::cout << "FLUSH";
+			else if (maxPoints < 150)
+				std::cout << "FULL HOUSE";
+			else if (maxPoints < 170)
+				std::cout << "FOUR OF A KIND";
+			else
+				std::cout << "STRAIGHT FLUSH";
+			std::cout << "\n\n";
+
+            std::cout << "\tThe winning hand:"<<std::endl;
+			printWinningHand(roundWinner);
+	}
+
 	/* main gameplay function*/
 	void startGame()
 	{
@@ -804,19 +893,19 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
-                std::cout<<"806"<<std::endl;
+				flop();
+				river();
+				FindWinner();
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
             for(int l = 0; l < players_count; l++)
             {
-                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != winner ) 
                 {
-                    std::cout<<"902"<<std::endl;
                 std::cout << "\t" << players[l].name << std::endl;
                 printWinningHand(l);
-                players[l].IfAllIn = false;
-                
+                players[l].IfAllIn = false;        
                 }
             }
                 players[winner].money += pot;
@@ -832,13 +921,17 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
+				turn();
+				river();				
+
+				FindWinner();
                 std::cout<<"823"<<std::endl;
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
             for(int l = 0; l < players_count; l++)
             {
-                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != winner ) 
                 {
                     std::cout<<"902"<<std::endl;
                 std::cout << "\t" << players[l].name << std::endl;
@@ -860,13 +953,15 @@ private:
 			takeBets();
 			if (oneLeft())
 			{
-                std::cout<<"840"<<std::endl;
+				
+				river();
+				FindWinner();
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
                 for(int l = 0; l < players_count; l++)
                 {
-                if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
+                if ((players[l].round == true || players[l].IfAllIn == true) && l != winner ) 
                 {
                 std::cout << "\t" << players[l].name << std::endl;
                 printWinningHand(l);
@@ -884,54 +979,14 @@ private:
 			_sleep(sleep_time);
 			printTable();
 			takeBets();
-
 			evaluateHands();
-
-			/* find and declare round winner */
-			maxPoints = 0;
-			for (int q = 0; q < players_count; q++)
-			{
-				if (players[q].round || players[q].IfAllIn == true)
-				{
-					if (handPoints[q] > maxPoints)
-					{
-						maxPoints = handPoints[q];
-						roundWinner = q;
-					}
-				}
-			}
-			std::cout << std::endl;
-			std::cout << players[roundWinner].name << " wins $" << pot << " with ";
-			if (maxPoints < 30)
-				std::cout << "HIGH CARD";
-			else if (maxPoints < 50)
-				std::cout << "SINGLE PAIR";
-			else if (maxPoints < 70)
-				std::cout << "TWO PAIRS";
-			else if (maxPoints < 90)
-				std::cout << "THREE OF A KIND";
-			else if (maxPoints < 110)
-				std::cout << "STRAIGHT";
-			else if (maxPoints < 130)
-				std::cout << "FLUSH";
-			else if (maxPoints < 150)
-				std::cout << "FULL HOUSE";
-			else if (maxPoints < 170)
-				std::cout << "FOUR OF A KIND";
-			else
-				std::cout << "STRAIGHT FLUSH";
-			std::cout << "\n\n";
-
-            std::cout << "\tThe winning hand:"<<std::endl;
-			printWinningHand(roundWinner);
-            
+			FindWinner();
             if (playersLeft() > 1) std::cout << std::endl << "Hands of ramaining players:" << std::endl;
 
             for(int l = 0; l < players_count; l++)
             {
                 if ((players[l].round == true || players[l].IfAllIn == true) && l != roundWinner ) 
                 {
-                    std::cout<<"902"<<std::endl;
                 std::cout << "\t" << players[l].name << std::endl;
                 printWinningHand(l);
                 players[l].IfAllIn = false;
