@@ -248,7 +248,7 @@ private:
 	int handPoints[6];
 	int bestHand[6][3];
 
-    enum  enabled_actions {FLOP=1, CHECK, BET_OR_CALL};
+    enum  enabled_actions {FLOP=1, CHECK, BET_OR_CALL, RAISE};
     enum enabled_actions action;
     
 
@@ -311,39 +311,65 @@ private:
 			{
 				if (betOn)
 				{
-					cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL ";
+					cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL (4) RAISE ";
 					cin >> picked_action;
                     action = (enabled_actions)picked_action;
-					while (action != FLOP && action != BET_OR_CALL)
+					while (action != FLOP && action != BET_OR_CALL && action != RAISE)
 					{
 						cout << "Invalid number pressed." << endl;
 						cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL ";
 					    cin >> picked_action;
                         action = (enabled_actions)picked_action;
 					}
+					if (picked_action == RAISE)
+                    {
+						if (players[player_index].money <= betOn){
+						while (action != FLOP && action != BET_OR_CALL)
+					    {
+							cout << "You don't have enough money to RAISE!"<<endl;
+							cout << "Invalid number pressed." << endl;
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL (4) RAISE";
+						    cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+					    }
+						}
+					}
 				}
 				else
 				{
-					cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
+					cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL (4) RAISE ";
 					cin >> picked_action;
                     action = (enabled_actions)picked_action;
                     if (players[player_index].money == 0 && picked_action == 3)
                     {
                         while (picked_action < 1 || picked_action > 2)
 					    {
-                            cout << "You have no money to make a BET/CALL"<<endl;
-						    cout << "Invalid number pressed." << endl;
-						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
+                            if (picked_action == BET_OR_CALL) {cout << "You have no money to make a BET/CALL"<<endl;}
+							cout << "Invalid number pressed." << endl;
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL (4) RAISE";
 						    cin >> picked_action;
                             action = (enabled_actions)picked_action;
 					    }
                     }
-                    else 
+					else if (picked_action == RAISE)
                     {
-                        while (picked_action < 1 || picked_action > 3)
+						if (players[player_index].money <= betOn || betOn == 0){
+						while (picked_action < 1 || picked_action > 3)
+					    {
+							cout << "You don't have enough money to RAISE!"<<endl;
+							cout << "Invalid number pressed." << endl;
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL (4) RAISE";
+						    cin >> picked_action;
+                            action = (enabled_actions)picked_action;
+					    }
+						}
+					}
+					else 
+                    {
+                        while (picked_action < 1 || picked_action > 4)
 					    {
 						    cout << "Invalid number pressed." << endl;
-						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL ";
+						    cout << "\t\t\t\t\tYour action: (1) FLOP (2) CHECK (3) BET/CALL (4) RAISE";
 						    cin >> picked_action;
                             action = (enabled_actions)picked_action;
 					    }
@@ -362,7 +388,7 @@ private:
 					cout << "\t+ " << players[player_index].name << " checks.\n";
 					continue;
 				}
-				else 
+				else if (action == BET_OR_CALL)
 				{
 					if (betOn)
 					{
@@ -384,11 +410,9 @@ private:
                                 players[player_index].money = 0;
                                 players[player_index].goodToGo = 1;
                                 players[player_index].round = 0;
-                                players[player_index].IfAllIn = true;
-
-                                
+                                players[player_index].IfAllIn = true;                             
                                 cout << "\t+ " << players[player_index].name << " GOES ALL IN! " << "$\n";
-                            }//nowa zmienna w players "IfAllIn    dodac przy wygranej zeby sprawdzac tych co dali all in"
+                            }
                         }
                         else
                         {
@@ -417,6 +441,32 @@ private:
 
 						cout << "\t+ " << players[player_index].name << " bets " << bet << "$\n";
 					}
+				}
+				else //RAISE option
+				{
+						cout << "How much do you want to RAISE: ";
+						cin >> bet;
+						while (bet > betOn + players[player_index].money)
+						{
+							cout << "Invalid number to RAISE." << endl;
+							cout << "How much do you want to RAISE: ";
+							cin >> bet;						
+							cout << endl << endl;
+						}
+						pot += bet + betOn;
+						players[player_index].money -= (bet + betOn);
+						betOn += bet;
+						players[player_index].goodToGo = 1;
+
+						cout << "\t+ " << players[player_index].name << " raises " << bet << "$\n";
+						for (int p = 0; p < 6; p++)
+						{
+							if (p != player_index)
+							{
+								players[p].round = 1;
+								players[p].goodToGo = 0;
+							}						
+						}					
 				}
 			}
 			/* computers actions */
@@ -467,7 +517,7 @@ private:
                                 players[k % players_count].IfAllIn = true;
 
                                 cout << "\t+ " << players[k % players_count].name << " GOES ALL IN! " << "$\n";
-                            }//nowa zmienna w players "IfAllIn    dodac przy wygranej zeby sprawdzac tych co dali all in"
+                            }
                         }
                         else
                         {
@@ -502,10 +552,10 @@ private:
 				{
 					if (players[player_index].round && players[player_index].goodToGo == 0)
 					{
-						cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL ";
+						cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL (4) RAISE ";
 						cin >> picked_action;
                         action = (enabled_actions)picked_action;
-						while (action != FLOP && action != BET_OR_CALL)
+						while (action != FLOP && action != BET_OR_CALL && action != RAISE)
 						{
 							cout << "Invalid number pressed." << endl;
 							cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL ";
@@ -513,12 +563,25 @@ private:
                             action = (enabled_actions)picked_action;
 							cout << endl << endl;
 						}
+						
+						if (picked_action == RAISE)
+                    	{
+							if (picked_action == RAISE) {cout << "There is no bet to RAISE! " << endl;}
+							if (players[player_index].money <= betOn) cout << "You don't have enough money to RAISE!"<<endl;
+							while (action != FLOP && action != BET_OR_CALL)
+					    	{
+								cout << "Invalid number pressed." << endl;
+						    	cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL ";
+						    	cin >> picked_action;
+                            	action = (enabled_actions)picked_action;
+					    	}
+						}
 						if (action == FLOP)
 						{
 							cout << "\t- " << players[player_index].name << " flops...\n";
 							players[player_index].round = 0;
 						}
-						else if (betOn > players[player_index].money)
+						else if (action == BET_OR_CALL && betOn > players[player_index].money)
                         {
                             cout << "\t\tYou don't have that amount of money!"<<endl;
                             cout << "\t\tDo You want to go ALL IN!?" << endl;
@@ -542,6 +605,32 @@ private:
                                 cout << "\t+ " << players[player_index].name << " GOES ALL IN! " << "$\n";
                             }
                         }
+						else if (action == RAISE) //RAISE option
+						{
+						cout << "How much do you want to RAISE: ";
+						cin >> bet;
+						while (bet > betOn + players[player_index].money)
+						{
+							cout << "Invalid number to RAISE." << endl;
+							cout << "How much do you want to RAISE: ";
+							cin >> bet;						
+							cout << endl << endl;
+						}
+						pot += bet + betOn;
+						players[player_index].money -= (bet + betOn);
+						betOn += bet;
+						players[player_index].goodToGo = 1;
+
+						cout << "\t+ " << players[player_index].name << " raises " << bet << "$\n";
+						for (int p = 0; p < 6; p++)
+						{
+							if (p != player_index)
+							{
+								players[p].round = 1;
+								players[p].goodToGo = 0;
+							}						
+						}						
+						}
 						else
 						{
 							pot += betOn;
