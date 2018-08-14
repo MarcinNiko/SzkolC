@@ -542,11 +542,36 @@ private:
                         }
                         else
                         {
-						    pot += betOn;
-						    players[k % players_count].money -= betOn;
-						    players[k % players_count].goodToGo = 1;
-						    cout << "\t+ " << players[k % players_count].name << " bets " << betOn << "$\n";
-                        }
+							if ((rand()%4) !=0)
+							{
+						    	pot += betOn;
+						    	players[k % players_count].money -= betOn;
+						    	players[k % players_count].goodToGo = 1;
+						    	cout << "\t+ " << players[k % players_count].name << " bets " << betOn << "$\n";
+							}
+							else //RAISE option
+							{
+							while(bet > 200)
+							{
+							bet = rand()%(players[k % players_count].money - betOn);
+							}
+							pot += bet + betOn;
+							players[k % players_count].money -= (bet + betOn);
+							betOn += bet;
+							players[k % players_count].goodToGo = 1;
+
+							cout << "\t+ " << players[k % players_count].name << " raises " << bet << "$\n";
+							for (int p = 0; p < players_count; p++)
+							{
+								if (p != (k % players_count))
+								{
+								players[p].round = 1;
+								players[p].goodToGo = 0;
+								}						
+							}					
+				//end of RAISE
+							}
+						}
 					}
 					else
 					{
@@ -886,7 +911,8 @@ private:
 	{
 		using std::cout;
 		using std::endl;
-
+	if (winner != -1)
+	{
 		Card winningHand[5];
 		for (int i = 0; i < 3; i++)
 			winningHand[i] = tableCards[bestHand[winner][i]];
@@ -904,11 +930,13 @@ private:
 		cout << endl << endl;
 		_sleep(3);
 	}
+	}
 
 	void FindWinner()
 	{
 					/* find and declare round winner */
 			maxPoints = 0;
+			roundWinner = -1;
 			for (int q = 0; q < players_count; q++)
 			{
 				if (players[q].round || players[q].IfAllIn == true)
@@ -1077,7 +1105,7 @@ private:
                 printWinningHand(l);
                 players[l].IfAllIn = false;
                 }
-            }
+            	}
                 players[winner].money += pot;
 				i++;
 				continue;
