@@ -146,7 +146,7 @@ public:
 class PokerGame
 {
 public:
-
+	//static const int NumOfPlayers;
 	/*PokerGame(int NoP) : players_count(NoP)
 	{
 		players_count = NoP;
@@ -160,7 +160,13 @@ public:
 			players[i].playing = true;
 		}
 
-		players[0].name = "Wojciech";
+		char* arrOfNames[] = {"Wojciech", "Tristan", "Michal", "Edyta", "name", "Kamil", "Bartek", "Jacek", "Patryk", "Norbert"};
+		for (int k = 0; k < players_count; k++)
+		{
+			players[k].name = arrOfNames[k];
+			if (k == player_index) players[player_index].name = name;
+		}
+		/*players[0].name = "Wojciech";
 		players[1].name = "Tristan";
 		players[2].name = "Michal";
 		players[3].name = "Edyta";
@@ -169,7 +175,7 @@ public:
 		players[6].name = "Bark";
 		players[7].name = "Jacek";
 		players[8].name = "Paal";
-		players[9].name = "Norbert";
+		players[9].name = "Norbert";*/
 
 		startGame();
 	}
@@ -215,20 +221,25 @@ public:
 
 		cout << "------------------------------------------------------------------------------------------------------------------" << endl;
 		cout << "\t  " << ((players[0].playing) ? (players[0].name) : "      ") << "         " << ((players[1].playing) ? (players[1].name) : "     ") << "           "
-			<< ((players[2].playing) ? (players[2].name) : "    ") << endl;
+			<< ((players[2].playing) ? (players[2].name) : "    ") << "\t\t"<< "LEGEND:" <<endl;
 		cout << "\t   $" << setw(4) << ((players[0].playing) ? (players[0].money) : 0) << "         $" << setw(4) << ((players[1].playing) ? (players[1].money) : 0)
 			<< "\t           $" << setw(4) << ((players[2].playing) ? (players[2].money) : 0) << endl;
-		cout << "\t     _____________________________" << endl;
-		cout << "\t    / " << ((bind == 0) ? "@" : " ") << "            " << ((bind == 1) ? "@" : " ") << "            " << ((bind == 2) ? "@" : " ") << " \\" << endl;
-		cout << setw(8) << ((players[6].playing) ? (players[6].name) : "      ") << "   /  ___   ___   ___   ___   ___  \\" <<"\t"<< ((players[7].playing) ? (players[7].name) : "      ") << endl;
-		cout << "  $"<< setw(4) <<((players[6].playing) ? (players[6].money) : 0) << "    | | " << ((tableCards[0].rank) >= 0 ? ranks[tableCards[0].rank] : " ") << " | | " << ((tableCards[1].rank) >= 0 ? ranks[tableCards[1].rank] : " ") << " | | " << ((tableCards[2].rank) >= 0 ? ranks[tableCards[2].rank] : " ") << " | | "
-			<< ((tableCards[3].rank) >= 0 ? ranks[tableCards[3].rank] : " ") << " | | " << ((tableCards[4].rank) >= 0 ? ranks[tableCards[4].rank] : " ") << " | |" << "\t$"<< setw(4) <<((players[7].playing) ? (players[7].money) : 0) << endl;
+		cout << "\t     _____________________________" << "\t\t\tD - Diamonds" <<endl;
+		cout << "\t    / " << ((bind == 0) ? "@" : " ") << "            " << ((bind == 1) ? "@" : " ") << "            " << ((bind == 2) ? "@" : " ") << " \\"<<"\t\t\tH - Hearts" << endl;
+		if(players_count >= 8) {cout << setw(8) << ((players[6].playing) ? (players[6].name) : "      ") << "   /  ___   ___   ___   ___   ___  \\" <<"\t"<< ((players[7].playing) ? (players[7].name) : "      ") <<"\t\tC - Clubs" <<endl;}
+		else {cout << "\t   /  ___   ___   ___   ___   ___  \\" << "\t\t\tC - Clubs"<< endl;}
+		if ( players_count >= 8) {cout << "  $"<< setw(4) <<((players[6].playing) ? (players[6].money) : 0) << "    | | " << ((tableCards[0].rank) >= 0 ? ranks[tableCards[0].rank] : " ") << " | | " << ((tableCards[1].rank) >= 0 ? ranks[tableCards[1].rank] : " ") << " | | " << ((tableCards[2].rank) >= 0 ? ranks[tableCards[2].rank] : " ") << " | | "
+			<< ((tableCards[3].rank) >= 0 ? ranks[tableCards[3].rank] : " ") << " | | " << ((tableCards[4].rank) >= 0 ? ranks[tableCards[4].rank] : " ") << " | |" << "\t$"<< setw(4) <<((players[7].playing) ? (players[7].money) : 0) << "\t\tS - Spades"<<endl;}
+		else {cout << setw(4) << "\t   | | " << ((tableCards[0].rank) >= 0 ? ranks[tableCards[0].rank] : " ") << " | | " << ((tableCards[1].rank) >= 0 ? ranks[tableCards[1].rank] : " ") << " | | " << ((tableCards[2].rank) >= 0 ? ranks[tableCards[2].rank] : " ") << " | | "
+			<< ((tableCards[3].rank) >= 0 ? ranks[tableCards[3].rank] : " ") << " | | " << ((tableCards[4].rank) >= 0 ? ranks[tableCards[4].rank] : " ") << " | |" <<"\t\t\tS - Spades" <<endl;}
 		cout << "\t   | | " << ((tableCards[0].rank) >= 0 ? suits[tableCards[0].suit] : " ") << " | | " << ((tableCards[1].rank) >= 0 ? suits[tableCards[1].suit] : " ") << " | | " << ((tableCards[2].rank) >= 0 ? suits[tableCards[2].suit] : " ") << " | | "
-			<< ((tableCards[3].rank) >= 0 ? suits[tableCards[3].suit] : " ") << " | | " << ((tableCards[4].rank) >= 0 ? suits[tableCards[4].suit] : " ") << " | |" << endl;
-		cout << "\t   | |___| |___| |___| |___| |___| |" << endl;
-		cout << "\t   |                               |" << endl;
-		cout << setw(8) << ((players[8].playing) ? (players[8].name) : "      ") << "   |	       Pot = $" << setw(4) << pot << "         |" << "\t" << ((players[9].playing) ? (players[9].name) : "      ") << endl;
-		cout << "  $"<< setw(4) <<((players[8].playing) ? (players[8].money) : 0) << "    \\                               /" << "\t$"<< setw(4) << ((players[9].playing) ? (players[9].money) : 0) << endl;
+			<< ((tableCards[3].rank) >= 0 ? suits[tableCards[3].suit] : " ") << " | | " << ((tableCards[4].rank) >= 0 ? suits[tableCards[4].suit] : " ") << " | |" <<"\t\t\tJ - Joker" <<endl;
+		cout << "\t   | |___| |___| |___| |___| |___| |" <<"\t\t\tQ - Queen" <<endl;
+		cout << "\t   |                               |" <<"\t\t\tK - King"<<endl;
+		if(players_count == 10) {cout << setw(8) << ((players[8].playing) ? (players[8].name) : "      ") << "   |	       Pot = $" << setw(4) << pot << "         |" << "\t" << ((players[9].playing) ? (players[9].name) : "      ") <<"\t\tA - Ace" <<endl;}
+		else {cout << "\t   |	       Pot = $" << setw(4) << pot << "         |" <<"\t\t\tA - Ace" <<endl;}
+		if(players_count == 10) {cout << "  $"<< setw(4) <<((players[8].playing) ? (players[8].money) : 0) << "    \\                               /" << "\t$"<< setw(4) << ((players[9].playing) ? (players[9].money) : 0) << endl;}
+		else {cout << "\t   \\                               /" << endl;}
 		cout << "\t    \\_" << ((bind == 5) ? "@" : "_") << "_____________" << ((bind == 4) ? "@" : "_") << "___________" << ((bind == 3) ? "@" : "_") << "_/" << endl;
 		cout << endl;
 		cout << "\t  " << ((players[5].playing) ? (players[5].name) : "      ") << "          " << ((players[player_index].playing) ? (players[player_index].name) : "      ") << "         "
@@ -249,7 +260,7 @@ public:
 	}
 
 private:
-	static const int players_count = 10;
+	static const int players_count = 6;
 	Player players[players_count];
 	Deck deck1;
 	int bind;
@@ -1107,7 +1118,6 @@ private:
 int main()
 {
 	std::string name;
-	//int NumOfPlayers;
 	PokerGame game1;
 
 	srand(time(NULL));
@@ -1127,9 +1137,6 @@ int main()
 	cout << "Please type your name: ";
 	std::cin >> name;
 
-	//cout << "Please type number of players";
-	//std::cin >> NumOfPlayers;
-	
 	cout << "OK " << name << " let's play some poker!" << endl << endl;
 
 	game1.start(name);
