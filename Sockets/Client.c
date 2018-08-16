@@ -46,7 +46,6 @@ int main(int argc,char **argv)
         //bzero( recvline, 100);
         printf("Enter message: ");
         fgets(sendline,100,stdin);
-        printf("\n%s",sendline);
         if(!strcmp("Stop\n",sendline)) {running = 0;}
         if(send(sockfd,sendline,strlen(sendline+1),0)<0)
         {

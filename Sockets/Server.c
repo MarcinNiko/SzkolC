@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-
 int main()
 {
     ssize_t n;
@@ -20,7 +19,7 @@ int main()
         return 1;
     }
     char str[100], answer[20] = "Message received!",conn_message[100] = "Witaj ",name[100];
-    int listen_fd, comm_fd, running =1, event_count, i,sock_fd,temp,cliCounter=0;
+    int listen_fd, comm_fd, running =1, event_count, i,sock_fd,temp,cliCounter=0, k;
     char arrOfFd[10][100];
     int ifUser[100] = {0};
     struct sockaddr_in servaddr;
@@ -63,7 +62,7 @@ int main()
  
     listen(listen_fd, 10);
  /////
-    int k;
+
     printf("Waiting for clients to connect...\n");
     while(running)
     {   
@@ -129,11 +128,10 @@ int main()
                     close(sock_fd);
                     events[i].data.fd = -1;
                 }
-                //if(!(strcmp(str,"stop\n"))) {running = 0;}
                 printf("Received message from %s: %s\n",arrOfFd[events[i].data.fd],str);
                 if(!strcmp("Stop",str)){
                     cliCounter--;
-                    ifUser[comm_fd] = 0;
+                    ifUser[events[i].data.fd] = 0;
                     printf("%s left session\n", arrOfFd[events[i].data.fd]);
                     close(events[i].data.fd);
                 }
