@@ -30,7 +30,16 @@ int main(int argc,char **argv)
         close(sockfd);
         return 1;
     }
- 
+    else
+    {
+        printf("Connected to the server!\n");
+        printf("Enter your name: ");
+        fgets(sendline,100,stdin);
+        send(sockfd,sendline,strlen(sendline+1),0);
+        read(sockfd,recvline,100);
+        printf("\nServer: Witaj %s\n\n", recvline);
+    }
+    
     while(running)
     {
         bzero( sendline, 100);
