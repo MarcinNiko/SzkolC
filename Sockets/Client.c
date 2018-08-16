@@ -43,21 +43,16 @@ int main(int argc,char **argv)
     while(running)
     {
         bzero( sendline, 100);
-        bzero( recvline, 100);
+        //bzero( recvline, 100);
         printf("Enter message: ");
         fgets(sendline,100,stdin);
-
+        printf("\n%s",sendline);
+        if(!strcmp("Stop\n",sendline)) {running = 0;}
         if(send(sockfd,sendline,strlen(sendline+1),0)<0)
         {
             printf("Failed to send!");
             return 1;
         }
-        if(!(strcmp(sendline,"stop\n"))) {running = 0;}
-        /*if(strcmp(read(sockfd,recvline,100),"stop"))
-        {
-            running = 0;            
-        }*/
-        //printf("Server reply: %s",recvline);
     }
  close(sockfd);
 }

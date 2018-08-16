@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
+
 int main()
 {
     ssize_t n;
@@ -19,9 +20,9 @@ int main()
         return 1;
     }
     char str[100], answer[20] = "Message received!",conn_message[100] = "Witaj ",name[100];
-    int listen_fd, comm_fd, running =1, event_count, i,sock_fd,temp;
-    char* arrOfFd[100];
-
+    int listen_fd, comm_fd, running =1, event_count, i,sock_fd,temp,cliCounter=0;
+    char arrOfFd[10][100];
+    int ifUser[100] = {0};
     struct sockaddr_in servaddr;
     struct sockaddr_in clientaddr;
     socklen_t clilen;
@@ -62,13 +63,12 @@ int main()
  
     listen(listen_fd, 10);
  /////
-
-    
+    int k;
+    printf("Waiting for clients to connect...\n");
     while(running)
-    {
-        printf("\nWaiting for input...\n");
+    {   
         event_count = epoll_wait(epoll_fd, events, 10, 30000);
-        printf("Ready events: %d\n", event_count);
+        //printf("Ready events: %d\n", event_count);
         for(i = 0; i < event_count; i++)
         {
             if(events[i].data.fd == listen_fd)
@@ -83,9 +83,21 @@ int main()
                 {  
                     read(comm_fd,name,10);
                     printf("Connection from %s accepted! fd(%d)\n", name, comm_fd);
-                    arrOfFd[comm_fd] = name;
+                    cliCounter++;
+                    ifUser[comm_fd] = 1;
+                    strcpy(arrOfFd[comm_fd], name);
                     send(comm_fd,name,strlen(name),0);
-                    //bzero(str,100);
+                    //bzero(name,100);
+                    if(cliCounter > 0)
+                    {
+                        printf("\nConnected clients: ");
+                        for(k = 0; k <100;k++)
+                        {
+                        if(ifUser[k] == 1) {printf(" %s",arrOfFd[k]);}
+                        }
+                        printf("\n");
+                    }
+                    printf("Waiting for input...\n");
                 }
                 ///////////
                 temp=fcntl(listen_fd, F_GETFL);
@@ -118,7 +130,13 @@ int main()
                     events[i].data.fd = -1;
                 }
                 //if(!(strcmp(str,"stop\n"))) {running = 0;}
-                printf("Received message from %s: %s\n",arrOfFd[comm_fd],str);
+                printf("Received message from %s: %s\n",arrOfFd[events[i].data.fd],str);
+                if(!strcmp("Stop",str)){
+                    cliCounter--;
+                    ifUser[comm_fd] = 0;
+                    printf("%s left session\n", arrOfFd[events[i].data.fd]);
+                    close(events[i].data.fd);
+                }
                 bzero(str,100);
                 event.data.fd=sock_fd;
                 event.events=EPOLLOUT | EPOLLET;
@@ -134,7 +152,16 @@ int main()
                 event.data.fd=sock_fd;
                 event.events= EPOLLIN | EPOLLET;
                 epoll_ctl(epoll_fd, EPOLL_CTL_MOD,sock_fd,&event);
-           
+                if(cliCounter > 0)
+                {
+                    printf("\nConnected clients: ");
+                    for(k = 0; k <100;k++)
+                    {
+                    if(ifUser[k] == 1) {printf(" %s",arrOfFd[k]);}
+                    }
+                    printf("\n");
+                }
+                printf("Waiting for input...\n");
             }      
         }
    }
