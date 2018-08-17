@@ -130,6 +130,7 @@ int main()
                 }
                 printf("Received message from %s: %s\n",arrOfFd[events[i].data.fd],str);
                 if(!strcmp("Stop",str)){
+                    bzero(name,100);
                     cliCounter--;
                     ifUser[events[i].data.fd] = 0;
                     printf("%s left session\n", arrOfFd[events[i].data.fd]);
