@@ -324,7 +324,7 @@ private:
 				if (betOn)
 				{
 					cout << "\t\t\t\t\tYour action: (1) FLOP (3) BET/CALL (4) RAISE ";
-					//cin >> picked_action;
+					cin >> picked_action;
 					read(players[player_index].player_socket,players[player_index].player_input,1);
 					picked_action = players[player_index].player_input[0];
 					cout << picked_action;
@@ -916,7 +916,6 @@ private:
 
 		qsort(winningHand, 5, sizeof(Card), compareCards);
 
-		//cout << "   The winning hand:" << endl;
 		cout << "   ___   ___   ___   ___   ___" << endl;
 		cout << "  | " << ranks[winningHand[0].rank] << " | | " << ranks[winningHand[1].rank] << " | | " << ranks[winningHand[2].rank] << " | | " << ranks[winningHand[3].rank] << " | | " << ranks[winningHand[4].rank] << " |" << endl;
 		cout << "  | " << suits[winningHand[0].suit] << " | | " << suits[winningHand[1].suit] << " | | " << suits[winningHand[2].suit] << " | | " << suits[winningHand[3].suit] << " | | " << suits[winningHand[4].suit] << " |" << endl;
@@ -1057,7 +1056,6 @@ private:
 				river();				
 
 				FindWinner();
-                //std::cout<<"823"<<std::endl;
 				winner = getWinner();
 				std::cout << players[winner].name << " wins $" << pot << "\n\n";
                 printWinningHand(winner);
@@ -1065,7 +1063,6 @@ private:
             {
                 if ((players[l].round == true || players[l].IfAllIn == true) && l != winner ) 
                 {
-                    //std::cout<<"902"<<std::endl;
                 std::cout << "\t" << players[l].name << std::endl;
                 printWinningHand(l);
                 players[l].IfAllIn = false;
@@ -1125,11 +1122,7 @@ private:
                 
                 }
             }
-            //std::cout << "POT: "<< pot << std::endl;
-            //std::cout << "Winner money: "<< players[roundWinner].money << std::endl;
 			players[roundWinner].money += pot;
-            //std::cout << "Winner money + pot: " << players[roundWinner].money << std::endl;
-
 			i++;
 		}
 
